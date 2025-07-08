@@ -1,0 +1,63 @@
+[project]
+name = "strands-a2a-demo"
+version = "0.1.0"
+description = "Demo with multiple AI agents using Google A2A (agent-to-agent) Python SDK and Strands Agents SDK"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+    { name = "Danilo Poccia" }
+]
+keywords = ["ai", "agents", "a2a", "strands", "google", "multi-agent", "llm", "voice", "web"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "strands-agents[a2a]>=0.1.9",
+    "strands-agents-tools[mem0_memory]>=0.1.7",
+    "a2a-sdk>=0.2.10",
+    "httpx[http2]>=0.24.0",
+    "uvicorn[standard]>=0.34.2",
+    "boto3>=1.38.37",
+    "pyaudio>=0.2.14",
+    "rx>=3.2.0",
+    "pytz>=2025.2",
+    "livekit>=1.0.9",
+    "numpy>=2.3.0",
+    "scipy>=1.15.3",
+    "aws-sdk-bedrock-runtime>=0.0.2",
+    "python-dotenv>=1.1.0",
+    "mcp[cli]>=1.9.4",
+    "fastapi>=0.104.0",
+    "flask>=3.0.0",
+    "flask-socketio>=5.0.0",
+    "psutil>=6.1.0",
+    "requests>=2.32.0",
+]
+
+[project.scripts]
+configurable-agent = "configurable_agent:main"
+coordinator-agent = "coordinator_agent:main"
+a2a-client = "a2a_client:main"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["configurable_agent", "coordinator_agent", "a2a_client", "base_agent", "agent_client", "a2a_push_notification_manager", "aws_credentials_helper", "web_interface", "interactive_interface", "speak_interface", "test_interface", "webspeak_interface", "agent_process_manager", "log_viewer", "strands_tools_mapping"]
+
+[tool.uv]
+package = true
+
+[project.urls]
+Homepage = "https://github.com/danilop/strands-a2a-demo"
+Repository = "https://github.com/danilop/strands-a2a-demo"
+Documentation = "https://github.com/danilop/strands-a2a-demo#readme"
+Issues = "https://github.com/danilop/strands-a2a-demo/issues"

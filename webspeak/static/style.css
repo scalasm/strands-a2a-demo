@@ -1,0 +1,594 @@
+/* A2A WebSpeak Interface - Matching Web Interface Layout */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: calc(100vh - 40px);
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+}
+
+.status-dot.auto-refresh {
+    background: #f59e0b;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Main 3-column layout - exactly like web interface */
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 0.85fr 480px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    background: #fafafa;
+    overflow: hidden;
+}
+
+.logs-panel {
+    background: #f8fafc;
+    border-left: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Agent selection styling */
+#agent-selection {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+#agent-selection label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+#agent-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+}
+
+#agent-select:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+button:hover:not(:disabled) {
+    background: #5856eb;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#status {
+    padding: 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+}
+
+#status.disconnected {
+    background: #fed7d7;
+    color: #c53030;
+    border: 2px solid #feb2b2;
+}
+
+#status.connected {
+    background: #c6f6d5;
+    color: #2f855a;
+    border: 2px solid #9ae6b4;
+}
+
+#status.recording {
+    background: #fbb6ce;
+    color: #b83280;
+    border: 2px solid #f687b3;
+}
+
+/* Chat area styling */
+#chat-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 1rem;
+    background: white;
+}
+
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border-left: 4px solid;
+}
+
+.message.system {
+    background: #ebf8ff;
+    border-left-color: #3182ce;
+}
+
+.message.user {
+    background: #f0fff4;
+    border-left-color: #38a169;
+}
+
+.message.assistant {
+    background: #fef5e7;
+    border-left-color: #ed8936;
+}
+
+.message.error {
+    background: #fed7d7;
+    border-left-color: #e53e3e;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-bottom: 0.25rem;
+}
+
+.message-role {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.message-text {
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Web interface compatible styles */
+.message-header {
+    font-size: 0.75rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.message-content {
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* Thinking blocks support - same as web interface */
+.thinking-content {
+    margin: 8px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.thinking-content.collapsed .thinking-body {
+    display: none;
+}
+
+.thinking-header {
+    background: #f8fafc;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #6b7280;
+    border-bottom: 1px solid #e2e8f0;
+    user-select: none;
+}
+
+.thinking-header:hover {
+    background: #f1f5f9;
+}
+
+.thinking-toggle {
+    transition: transform 0.2s ease;
+    font-size: 10px;
+}
+
+.thinking-content.collapsed .thinking-toggle {
+    transform: rotate(-90deg);
+}
+
+.thinking-body {
+    padding: 12px;
+    background: white;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #374151;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem;
+}
+
+#controls button {
+    flex: 1;
+}
+
+/* Log visual effects - exactly like web interface */
+@keyframes logBlink {
+    0% { 
+        background-color: #f8fafc;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transform: scale(1);
+        border: 1px solid transparent;
+    }
+    25% { 
+        background-color: #fef3c7;
+        box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+        transform: scale(1.02);
+        border: 2px solid #f59e0b;
+    }
+    50% { 
+        background-color: #dbeafe;
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+        transform: scale(1.03);
+        border: 2px solid #3b82f6;
+    }
+    75% { 
+        background-color: #dcfce7;
+        box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+        transform: scale(1.02);
+        border: 2px solid #22c55e;
+    }
+    100% { 
+        background-color: #f8fafc;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transform: scale(1);
+        border: 1px solid transparent;
+    }
+}
+
+@keyframes newIndicator {
+    0% { 
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    50% { 
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% { 
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+}
+
+/* Logs panel styling - exactly like web interface */
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.logs-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 16px;
+}
+
+.logs-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.agent-logs {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: #fafafa;
+}
+
+.agent-log-section {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.agent-log-section.updated {
+    animation: logBlink 2.5s ease-in-out;
+    position: relative;
+    z-index: 10;
+}
+
+.agent-log-section.updated::after {
+    content: "NEW";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(45deg, #f59e0b, #ef4444);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    animation: newIndicator 2.5s ease-in-out;
+    z-index: 20;
+}
+
+.agent-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.agent-log-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.agent-log-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 14px;
+}
+
+.agent-status {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.agent-status.running {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.agent-status.stopped {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.agent-status.unknown {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.agent-log-meta {
+    font-size: 10px;
+    color: #6b7280;
+}
+
+.agent-log-entries {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 12px;
+    background: #f9fafb;
+}
+
+.agent-log-entries::-webkit-scrollbar {
+    width: 4px;
+}
+
+.agent-log-entries::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.agent-log-entries::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.agent-log-entries::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.log-entry {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: #f8fafc;
+    border-left: 3px solid #e2e8f0;
+    word-break: break-word;
+}
+
+.log-entry.error {
+    background: #fef2f2;
+    border-left-color: #dc2626;
+    color: #7f1d1d;
+}
+
+.log-entry.warning {
+    background: #fffbeb;
+    border-left-color: #d97706;
+    color: #92400e;
+}
+
+.log-entry.info {
+    background: #eff6ff;
+    border-left-color: #2563eb;
+    color: #1e40af;
+}
+
+.log-timestamp {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.log-level {
+    font-weight: 600;
+    margin: 0 6px;
+}
+
+.log-message {
+    color: #374151;
+}
+
+.no-logs {
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+    padding: 2rem;
+}
+
+/* Dynamic height calculation for log sections - exactly like web interface */
+.agent-logs.dynamic-height .agent-log-section {
+    height: calc(((100vh - 240px) / var(--agent-count, 1) - 12px) * 0.8);
+    min-height: 120px;
+}
+
+.agent-logs.dynamic-height .agent-log-entries {
+    max-height: calc(100% - 60px);
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 250px 1fr 350px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+    
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .chat-area {
+        order: 2;
+    }
+    
+    .logs-panel {
+        order: 3;
+        border-left: none;
+        border-top: 1px solid #e2e8f0;
+        max-height: 300px;
+    }
+    
+    .logs-header {
+        padding: 16px;
+    }
+    
+    .logs-header h3 {
+        font-size: 14px;
+    }
+    
+    .agent-log-header {
+        padding: 8px 12px;
+    }
+    
+    .agent-log-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+} 

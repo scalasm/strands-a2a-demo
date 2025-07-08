@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2A Web Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 A2A Web Interface</h1>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span id="connection-status">Connecting...</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left sidebar: Agents -->
+            <div class="sidebar">
+                <div class="mode-selector">
+                    <label>Communication Mode:</label>
+                    <div class="mode-buttons">
+                        <button class="mode-button" data-mode="messages">Messages</button>
+                        <button class="mode-button active" data-mode="tasks">Tasks</button>
+                    </div>
+                </div>
+                
+                <div class="agent-selector">
+                    <label>Select Agent:</label>
+                    <div class="agent-list" id="agent-list">
+                        <!-- Agents will be populated here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Middle: Chat area -->
+            <div class="chat-area">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message system">
+                        <div class="message-content">
+                            Welcome to the A2A Web Interface! Select an agent to start chatting.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div>Processing...</div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-container">
+                        <input type="text" class="message-input" id="message-input" 
+                               placeholder="Type your message..." disabled>
+                        <button class="send-button" id="send-button" disabled>Send</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right: Logs area -->
+            <div class="logs-panel">
+                <div class="logs-header">
+                    <h3>🗂️ Real-time Logs</h3>
+                    <div class="logs-status">
+                        <div class="status-dot auto-refresh"></div>
+                        <span>Auto-updating</span>
+                    </div>
+                </div>
+                
+                <div class="agent-logs" id="agent-logs">
+                    <!-- Agent logs will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', path='/main.js') }}"></script>
+</body>
+</html> 

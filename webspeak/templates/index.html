@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2A WebSpeak Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 A2A WebSpeak Interface</h1>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span id="connection-status">Connecting...</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Left sidebar: Agent Selection -->
+            <div class="sidebar">
+                <div id="agent-selection">
+                    <label for="agent-select">Select Agent:</label>
+                    <select id="agent-select">
+                        <option value="">Loading agents...</option>
+                    </select>
+                    <button id="connect-btn" disabled>Connect</button>
+                </div>
+                
+                <div id="status" class="disconnected">Select an agent to start</div>
+            </div>
+            
+            <!-- Middle: Voice Chat Area -->
+            <div class="chat-area">
+                <div id="chat-container"></div>
+                
+                <div id="controls">
+                    <button id="start-btn" disabled>Start Conversation</button>
+                    <button id="stop-btn" disabled>Stop Conversation</button>
+                </div>
+            </div>
+            
+            <!-- Right: Logs Panel (Always Visible) -->
+            <div class="logs-panel">
+                <div class="logs-header">
+                    <h3>🗂️ Real-time Logs</h3>
+                    <div class="logs-status">
+                        <div class="status-dot auto-refresh"></div>
+                        <span>Auto-updating</span>
+                    </div>
+                </div>
+                
+                <div class="agent-logs" id="agent-logs">
+                    <!-- Agent logs will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html> 

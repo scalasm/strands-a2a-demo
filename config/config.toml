@@ -1,0 +1,96 @@
+[logging]
+# Logging configuration
+# Levels: DEBUG, INFO, WARNING, ERROR
+level = "INFO"
+# Directory for agent log files (with automatic rotation)
+log_directory = "./logs"
+
+# Webhook configuration for push notifications
+[webhook]
+# Port for A2A push notification webhook server
+port = 8000
+host = "0.0.0.0"
+
+# Web interface configuration
+[web_interface]
+# Port for main web interface
+port = 8080
+host = "0.0.0.0"
+
+# Port for web speak interface
+webspeak_port = 8081
+webspeak_host = "0.0.0.0"
+
+[agents]
+# Model configuration for all agents
+#model = "us.amazon.nova-premier-v1:0"
+#model = "us.amazon.nova-pro-v1:0"
+model = "us.amazon.nova-lite-v1:0"
+
+# Configuration for multiple configurable agents
+# Usage: uv run configurable-agent <agent_key>
+# The agent_key becomes the agent name
+
+# Calculator Agent - Uses Strands calculator tool
+# Usage: uv run configurable-agent calculator
+[configurable_agent.calculator]
+description = "Advanced mathematical calculation agent supporting both immediate and async processing"
+port = 8001
+system_prompt = "You are a precise mathematical calculator. Solve math problems step by step. Format your result in a way that is easy to read and understand."
+strands_tools = ["calculator"]
+
+# No MCP servers for calculator
+[configurable_agent.calculator.mcp_servers]
+
+# Time Agent - Uses Strands current_time tool  
+# Usage: uv run configurable-agent time
+[configurable_agent.time]
+description = "Accurate time and timezone information agent supporting both immediate and async processing"
+port = 8002
+system_prompt = "You are a precise time keeper. Provide accurate time and timezone information. Format your result in a way that is easy to read and understand."
+strands_tools = ["current_time"]
+
+# No MCP servers for time agent
+[configurable_agent.time.mcp_servers]
+
+# File Editor Agent - Uses Strands tools for file operations
+# Usage: uv run configurable-agent fileeditor
+[configurable_agent.fileeditor]
+description = "A file editor agent that can read, write, and edit files using Strands tools"
+port = 8003
+system_prompt = "You are a helpful file editor assistant. You can read, write, and edit files efficiently. Always confirm destructive operations and provide clear summaries of changes made."
+strands_tools = ["editor", "file_read", "file_write"]
+
+# No MCP servers for file editor
+[configurable_agent.fileeditor.mcp_servers]
+
+# Web Browser Agent - Uses MCP fetch tool for web browsing
+# Usage: uv run configurable-agent webbrowser  
+[configurable_agent.webbrowser]
+description = "A web browser agent that can fetch and browse web content using MCP tools"
+port = 8004
+system_prompt = "You are a web browsing assistant. You can fetch web content, analyze web pages, and help users find information online. Always provide accurate summaries of the content you fetch."
+strands_tools = []
+
+# MCP servers for web browser agent
+[configurable_agent.webbrowser.mcp_servers]
+fetch = { command = "uvx", args = ["mcp-server-fetch"] }
+
+# Coordinator Agents - Configurable coordinators for managing different agent groups
+# Usage: uv run coordinator-agent-configurable <coordinator_key>
+
+# Time & Calculator Coordinator - Manages calculator and time agents
+# Usage: uv run coordinator-agent-configurable time-and-calculator
+[coordinator_agent.time-and-calculator]
+description = "Coordinator agent that manages calculator and time agents for mathematical calculations and time-related queries"
+port = 8005
+system_prompt = "You are a time and calculator coordinator agent. Your job is to receive user queries and delegate them to the appropriate specialist agent. For mathematical calculations, use the calculator agent. For time and date queries, use the time agent. Analyze each query and use the correct tool to forward it to the specialist agent. Respond with the final answer from the specialist agent."
+coordinated_agents = ["calculator", "time"]
+
+# Edit & Browse Coordinator - Manages file editor and web browser agents
+# Usage: uv run coordinator-agent-configurable edit-and-browse
+[coordinator_agent.edit-and-browse]
+description = "Coordinator agent that manages file editor and web browser agents for file operations and web content retrieval"
+port = 8006
+system_prompt = "You are a file and web coordinator agent. Your job is to receive user queries and delegate them to the appropriate specialist agent. For file operations (reading, writing, editing files), use the fileeditor agent. For web browsing and fetching web content, use the webbrowser agent. Analyze each query and use the correct tool to forward it to the specialist agent. Respond with the final answer from the specialist agent."
+coordinated_agents = ["fileeditor", "webbrowser"]
