@@ -8,6 +8,35 @@ This demo showcases multiple AI agents using the **complete official A2A (agent-
 
 This project features a unified `a2a-client` with multiple modes of operation, including web-based UI, voice interaction capabilities, and comprehensive testing.
 
+## 🏗️ Agent Architecture
+
+This system features **two distinct types of agents**, both configurable through `config/config.toml`:
+
+### 🔧 **Individual Agents** (`configurable_agent`)
+Specialized agents that perform specific tasks using tools:
+- **Strands Tools**: Built-in capabilities like `calculator`, `current_time`, `file_read`, `file_write`, `editor`
+- **MCP Servers**: External integrations via Model Context Protocol (e.g., web fetch, file systems)
+- **Direct Communication**: Can be contacted directly by clients
+- **Focused Expertise**: Each agent specializes in a particular domain
+
+**Examples**: Calculator agent (math operations), Time agent (timezone queries), File Editor agent (file operations), Web Browser agent (content fetching)
+
+### 🌀 **Coordinator Agents** (`coordinator_agent`) 
+Meta-agents that orchestrate multiple individual agents:
+- **No Direct Tools**: Don't use Strands tools or MCP servers directly
+- **Agent Delegation**: Route requests to appropriate individual agents
+- **Workflow Management**: Handle complex multi-step operations across agents
+- **Intelligent Routing**: Analyze requests to determine which specialist agent(s) to use
+
+**Examples**: Time & Calculator coordinator (manages math and time requests), Edit & Browse coordinator (manages file and web operations)
+
+### 🔄 **How They Work Together**
+```
+User Request → Coordinator Agent → Individual Agent(s) → Tools/MCP → Results → User
+```
+
+Both types are automatically discovered and can be used through any client interface (web, CLI, voice).
+
 ## 📋 Table of Contents
 
 - [Quick Start](#-quick-start)
