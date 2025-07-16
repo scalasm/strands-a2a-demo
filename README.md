@@ -80,7 +80,7 @@ uv sync
 
 ```bash
 # Start all configured agents (recommended)
-uv run agents start
+uv run a2a-client agents start
 
 # Wait for agents to be ready, then use the client
 uv run a2a-client web
