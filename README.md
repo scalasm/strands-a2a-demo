@@ -1029,9 +1029,9 @@ uv run agents start                  # Start all agents
 uv run a2a-client web               # Launch web interface
 
 # Agent management
-uv run agents status                # Check agent status
-uv run agents restart               # Restart all agents
-uv run agents stop                  # Stop all agents
+uv run a2a-client agents status     # Check agent status
+uv run a2a-client agents restart    # Restart all agents
+uv run a2a-client agents stop       # Stop all agents
 
 # Client modes
 uv run a2a-client interactive       # CLI chat mode
