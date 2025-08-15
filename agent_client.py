@@ -4,12 +4,54 @@ A2A Agent Communication Client
 """
 
 import logging
+import httpx
+from typing import Any
 from uuid import uuid4
 
-from a2a.client import A2AClient
-from a2a.types import MessageSendParams, SendMessageRequest
+from a2a.client import A2AClient, A2ACardResolver
+from a2a.types import (
+    MessageSendParams,
+    SendMessageRequest,
+    AgentCard,
+)
 
 logger = logging.getLogger(__name__)
+
+# Added this for retro-compatibility with A2A older versions
+async def get_client_from_agent_card_url(
+    httpx_client: httpx.AsyncClient,
+    base_url: str,
+    agent_card_path: str = '/.well-known/agent.json',
+    http_kwargs: dict[str, Any] | None = None,
+) -> 'A2AClient':
+    """Fetches the public AgentCard and initializes an A2A client.
+
+    This method will always fetch the public agent card. If an authenticated
+    or extended agent card is required, the A2ACardResolver should be used
+    directly to fetch the specific card, and then the A2AClient should be
+    instantiated with it.
+
+    Args:
+        httpx_client: An async HTTP client instance (e.g., httpx.AsyncClient).
+        base_url: The base URL of the agent's host.
+        agent_card_path: The path to the agent card endpoint, relative to the base URL.
+        http_kwargs: Optional dictionary of keyword arguments to pass to the
+            underlying httpx.get request when fetching the agent card.
+
+    Returns:
+        An initialized `A2AClient` instance.
+
+    Raises:
+        A2AClientHTTPError: If an HTTP error occurs fetching the agent card.
+        A2AClientJSONError: If the agent card response is invalid.
+    """
+    agent_card: AgentCard = await A2ACardResolver(
+        httpx_client, base_url=base_url, agent_card_path=agent_card_path
+    ).get_agent_card(
+        http_kwargs=http_kwargs
+    )  # Fetches public card by default
+    return A2AClient(httpx_client=httpx_client, agent_card=agent_card)
+
 
 
 class AgentCommunicationClient:
@@ -28,7 +70,7 @@ class AgentCommunicationClient:
             return
             
         try:
-            self.client = await A2AClient.get_client_from_agent_card_url(
+            self.client = await get_client_from_agent_card_url(
                 httpx_client=self.httpx_client,
                 base_url=self.base_url
             )
@@ -46,7 +88,7 @@ class AgentCommunicationClient:
                     message={
                         'role': 'user',
                         'parts': [{'kind': 'text', 'text': query}],
-                        'messageId': uuid4().hex,
+                        'message_id': uuid4().hex,
                     }
                 )
             )
@@ -75,7 +117,7 @@ class AgentCommunicationClient:
                     message={
                         'role': 'user',
                         'parts': [{'kind': 'text', 'text': query_with_hint}],
-                        'messageId': uuid4().hex,
+                        'message_id': uuid4().hex,
                     }
                 )
             )

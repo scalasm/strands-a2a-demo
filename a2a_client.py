@@ -34,6 +34,7 @@ import sys
 from functools import wraps
 
 import httpx
+from agent_client import get_client_from_agent_card_url
 from a2a.client import A2AClient, A2ACardResolver
 from a2a.types import (
     Task,
@@ -48,8 +49,7 @@ from a2a.types import (
 )
 
 from a2a_push_notification_manager import get_client_webhook_manager, managed_webhook_server
-from base_agent import configure_logging
-from aws_credentials_helper import ensure_aws_credentials
+from model_config import configure_logging
 
 # Configure logging
 configure_logging()
@@ -208,7 +208,7 @@ class CleanA2AClient:
     async def _get_client(self) -> A2AClient:
         """Get or create the A2A client instance."""
         if self._a2a_client is None:
-            self._a2a_client = await A2AClient.get_client_from_agent_card_url(
+            self._a2a_client = await get_client_from_agent_card_url(
                 httpx_client=self.httpx_client,
                 base_url=self.agent_url
             )
@@ -362,7 +362,7 @@ class CleanA2AClient:
                 logger.debug(f"Created new httpx client for {self.agent_name}")
             
             # Initialize/reinitialize the A2A client
-            self._a2a_client = await A2AClient.get_client_from_agent_card_url(
+            self._a2a_client = await get_client_from_agent_card_url(
                 httpx_client=self.httpx_client,
                 base_url=self.agent_url
             )
@@ -380,8 +380,8 @@ class CleanA2AClient:
         part = Part(root=text_part)
         
         return Message(
-            messageId=str(uuid4()),
-            contextId=context_id or str(uuid4()),
+            message_id=str(uuid4()),
+            context_id=context_id or str(uuid4()),
             role=Role.user,
             parts=[part]
         )
@@ -489,7 +489,7 @@ class CleanA2AClient:
                     from a2a.types import TaskStatus, TaskState
                     mock_task = Task(
                         id="immediate-" + str(uuid4()),
-                        contextId=result.contextId or str(uuid4()),
+                        context_id=result.context_id or str(uuid4()),
                         status=TaskStatus(state=TaskState.completed, message=result),
                         history=[result]
                     )

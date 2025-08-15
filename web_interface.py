@@ -24,7 +24,7 @@ from pydantic import BaseModel
 from a2a.types import Task
 from a2a_client import CleanA2AClient, discover_available_agents, get_agent_info_summary, setup_signal_handlers, _cleanup_in_progress
 from a2a_push_notification_manager import get_client_webhook_manager
-from base_agent import configure_logging
+from model_config import configure_logging
 from log_viewer import LogViewer, AgentLogInfo
 
 # Configure logging

@@ -19,93 +19,8 @@ from a2a.server.agent_execution.context import RequestContext
 from a2a.utils import new_agent_text_message
 from agent_client import AgentCommunicationClient
 
+from model_config import ModelConfig, get_or_create_ai_model, configure_logging
 
-def load_config():
-    """Load configuration from config/config.toml."""
-    config_path = Path(__file__).parent / "config" / "config.toml"
-    with open(config_path, "rb") as f:
-        return tomllib.load(f)
-
-
-def parse_agent_key(agent_type: str, description: str = None) -> str:
-    """
-    Parse command line arguments to get the agent key.
-    
-    Args:
-        agent_type: The type of agent (e.g., "configurable", "coordinator")
-        description: Optional description for the argument parser
-    
-    Returns:
-        The agent key from command line arguments
-    """
-    if description is None:
-        description = f"Start a {agent_type} A2A agent"
-    
-    parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=f"""
-Examples:
-  python {agent_type}_agent.py calculator         # Start the calculator agent
-  python {agent_type}_agent.py time              # Start the time agent
-        """
-    )
-    
-    parser.add_argument(
-        "agent_key",
-        help=f"The {agent_type} agent key from config/config.toml"
-    )
-    
-    args = parser.parse_args()
-    return args.agent_key
-
-
-def load_agent_config(agent_key: str, agent_type: str, fallback_port: int = 8888) -> Dict[str, Any]:
-    """
-    Load and validate configuration for a specific agent.
-    
-    Args:
-        agent_key: The agent key (e.g., "calculator", "time", "time-and-calculator")
-        agent_type: The agent type ("configurable_agent" or "coordinator_agent")
-        fallback_port: The default port to use if not specified in config (default: 8888)
-    
-    Returns:
-        The agent configuration dictionary with port fallback applied
-        
-    Raises:
-        ValueError: If the agent key is not found in configuration
-        SystemExit: If configuration validation fails
-    """
-    config = load_config()
-    agents_config = config.get(agent_type, {})
-    
-    if agent_key not in agents_config:
-        available_keys = list(agents_config.keys())
-        logger = logging.getLogger(__name__)
-        logger.error(f"Agent '{agent_key}' not found in {agent_type} configuration.")
-        logger.error(f"Available {agent_type} agents: {available_keys}")
-        sys.exit(1)
-    
-    agent_config = agents_config[agent_key].copy()  # Copy to avoid modifying original config
-    
-    # Apply fallback port if not specified
-    if "port" not in agent_config:
-        agent_config["port"] = fallback_port
-        logger = logging.getLogger(__name__)
-        logger.warning(f"No port specified for {agent_type}.{agent_key}, using fallback port {fallback_port}")
-    
-    return agent_config
-
-
-def configure_logging():
-    """Configure logging from config/config.toml."""
-    try:
-        config = load_config()
-        log_level = config.get("logging", {}).get("level", "INFO").upper()
-        logging.basicConfig(level=getattr(logging, log_level), format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', force=True)
-        logging.getLogger().setLevel(getattr(logging, log_level))
-    except Exception:
-        logging.basicConfig(level=logging.INFO)
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -118,7 +33,10 @@ class BaseAgent:
     
     def __init__(self, system_prompt: str, tools: list, agent_name: str = "Unknown Agent"):
         """Initialize the base agent."""
-        self.strands_agent = Agent(system_prompt=system_prompt, tools=tools, model=load_config()["agents"]["model"])
+        model = get_or_create_ai_model(ModelConfig.from_config())
+        logger.info(f"Using AI model: {model.model_id} with type {model.model_type}")
+        
+        self.strands_agent = Agent(system_prompt=system_prompt, tools=tools, model=model)
         self.agent_name = agent_name
         self.httpx_client = None
         self.communication_clients: Dict[str, AgentCommunicationClient] = {}

@@ -26,7 +26,8 @@ from a2a.server.tasks import InMemoryTaskStore
 from a2a.client import A2AClient
 from uuid import uuid4
 
-from base_agent import BaseAgent, BaseAgentExecutor, load_config, create_base_agent_card, configure_logging, parse_agent_key, load_agent_config
+from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
+from model_config import ModelConfig, load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model
 
 # Use centralized logging configuration
 configure_logging()
@@ -140,11 +141,14 @@ class ConfigurableCoordinatorAgent:
         # Create delegation tools for each managed agent
         self.delegation_tools = self._create_delegation_tools()
         
+        model_config = self.coordinator_config.get("model", config["agents"]["model"])
+        model = get_or_create_ai_model(ModelConfig.from_config(model_config))
+
         # Create the Strands agent instance
         self.agent = Agent(
             system_prompt=self._build_system_prompt(),
             tools=self.delegation_tools,
-            model=self.coordinator_config.get("model", config["agents"]["model"])
+            model=model
         )
         
         # Keep track of agent clients
@@ -262,8 +266,8 @@ Returns:
             text_part = TextPart(text=query)
             part = Part(root=text_part)
             message = Message(
-                messageId=str(uuid4()),
-                contextId=str(uuid4()),
+                message_id=str(uuid4()),
+                context_id=str(uuid4()),
                 role=Role.user,
                 parts=[part]
             )

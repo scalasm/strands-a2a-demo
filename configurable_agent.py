@@ -137,7 +137,9 @@ from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
 
-from base_agent import BaseAgent, BaseAgentExecutor, load_config, create_base_agent_card, configure_logging, parse_agent_key, load_agent_config
+from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
+from model_config import load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model, ModelConfig
+
 
 # Use centralized logging configuration
 configure_logging()
@@ -234,11 +236,8 @@ class ConfigurableAgent:
     def _create_agent(self):
         """Create the Strands agent with all loaded tools."""
         # Don't call super().__init__ here since we're not using the BaseAgent pattern normally
-        model = self.agent_config.get("model")
-        if model is None:
-            config = load_config()
-            model = config["agents"]["model"]
-        
+        model_config = self.agent_config.get("model")
+        model = get_or_create_ai_model(ModelConfig.from_config(model_config))
         self.agent = Agent(
             system_prompt=self._build_system_prompt(),
             tools=self.loaded_tools,
@@ -278,9 +277,8 @@ class ConfigurableAgent:
             
         # Get the same configuration used for the original agent
         model = self.agent_config.get("model")
-        if model is None:
-            config = load_config()
-            model = config["agents"]["model"]
+        model_config = self.agent_config.get("model")
+        model = get_or_create_ai_model(ModelConfig.from_config(model_config))
         
         # Create a new isolated agent instance with the same tools and prompt
         isolated_agent = Agent(
