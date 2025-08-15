@@ -23,9 +23,10 @@ webspeak_host = "0.0.0.0"
 
 [agents]
 # Model configuration for all agents
-#model = "us.amazon.nova-premier-v1:0"
-#model = "us.amazon.nova-pro-v1:0"
-model = "us.amazon.nova-lite-v1:0"
+#model = "bedrock|us.amazon.nova-premier-v1:0"
+#model = "bedrock|us.amazon.nova-pro-v1:0"
+#model = "bedrock|us.amazon.nova-lite-v1:0"
+model = "openai|gpt-4.1"
 
 # Configuration for multiple configurable agents
 # Usage: uv run configurable-agent <agent_key>
