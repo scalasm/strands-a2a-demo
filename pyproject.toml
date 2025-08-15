@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "strands-agents[a2a]>=0.1.9",
+    "strands-agents[openai,litellm,a2a]>=1.4.0",
     "strands-agents-tools[mem0_memory]>=0.1.7",
     "a2a-sdk>=0.2.10",
     "httpx[http2]>=0.24.0",
@@ -51,7 +51,7 @@ requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["configurable_agent", "coordinator_agent", "a2a_client", "base_agent", "agent_client", "a2a_push_notification_manager", "aws_credentials_helper", "web_interface", "interactive_interface", "speak_interface", "test_interface", "webspeak_interface", "agent_process_manager", "log_viewer", "strands_tools_mapping"]
+py-modules = ["configurable_agent", "coordinator_agent", "a2a_client", "base_agent", "agent_client", "a2a_push_notification_manager", "aws_credentials_helper", "web_interface", "interactive_interface", "speak_interface", "test_interface", "webspeak_interface", "agent_process_manager", "log_viewer", "strands_tools_mapping", "model_config"]
 
 [tool.uv]
 package = true
