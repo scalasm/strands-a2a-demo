@@ -27,7 +27,7 @@ from a2a.client import A2AClient
 from uuid import uuid4
 
 from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
-from app_config import ModelConfig, load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model
+from app_config import ModelConfig, parse_agent_key, configure_logging, get_or_create_ai_model, get_application_config
 
 # Use centralized logging configuration
 configure_logging()
@@ -123,7 +123,7 @@ class ConfigurableCoordinatorAgent:
         self.coordinator_key = coordinator_key
         self.logger = configure_coordinator_logging(coordinator_key)
         self.httpx_client = httpx_client
-        config = load_config()
+        config = get_application_config()
         
         # Get the specific coordinator configuration
         coordinator_agents = config.get("coordinator_agent", {})
@@ -141,7 +141,7 @@ class ConfigurableCoordinatorAgent:
         # Create delegation tools for each managed agent
         self.delegation_tools = self._create_delegation_tools()
         
-        model_config = self.coordinator_config.get("model", config["agents"]["model"])
+        model_config = self.coordinator_config.get("model", config.agents["model"])
         model = get_or_create_ai_model(ModelConfig.from_config(model_config))
 
         # Create the Strands agent instance
@@ -401,7 +401,7 @@ class ConfigurableCoordinatorAgentExecutor(BaseAgentExecutor):
 
 def create_coordinator_agent_card(coordinator_key: str) -> AgentCard:
     """Create the agent card for the configurable coordinator agent."""
-    config = load_config()
+    config = get_application_config()
     coordinator_agents = config.get("coordinator_agent", {})
     
     if coordinator_key not in coordinator_agents:
@@ -456,7 +456,7 @@ def main():
         coordinator_logger = configure_coordinator_logging(coordinator_key)
         
         # Load and validate coordinator configuration using shared helper function
-        coordinator_config = load_agent_config(coordinator_key, "coordinator_agent", fallback_port=8889)
+        coordinator_config = get_application_config().load_agent_config(coordinator_key, "coordinator_agent", fallback_port=8889)
         port = coordinator_config.get("port", 8889)  # Double fallback just in case
         
         coordinator_card = create_coordinator_agent_card(coordinator_key)

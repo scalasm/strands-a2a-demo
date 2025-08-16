@@ -7,14 +7,13 @@ Comprehensive test suite for all A2A agents and configurations.
 
 import asyncio
 import logging
-import time
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from dataclasses import dataclass
 
 from a2a.types import Task
 from a2a_client import CleanA2AClient, discover_available_agents, get_agent_info_summary, setup_signal_handlers, _cleanup_in_progress
 from a2a_push_notification_manager import get_client_webhook_manager, managed_webhook_server
-from base_agent import configure_logging
+from app_config import get_application_config, configure_logging
 
 # Configure logging
 configure_logging()
@@ -230,12 +229,7 @@ async def test_mode(agent_filter: str = "all"):
     
     # Load webhook port from config
     try:
-        import tomllib
-        from pathlib import Path
-        config_path = Path(__file__).parent / "config" / "config.toml"
-        with open(config_path, "rb") as f:
-            config = tomllib.load(f)
-        webhook_port = config.get("webhook", {}).get("port", 8000)
+        webhook_port = get_application_config().get("webhook", {}).get("port", 8000)
     except Exception:
         webhook_port = 8000  # fallback default
     

@@ -22,7 +22,7 @@ from dataclasses import dataclass
 import psutil
 import argparse
 
-from app_config import load_config
+from app_config import get_application_config
 
 logger = logging.getLogger(__name__)
 
@@ -42,10 +42,10 @@ class AgentProcessManager:
     
     def __init__(self):
         """Initialize the process manager."""
-        self.config = load_config()
+        self.config = get_application_config()
         self.processes: Dict[str, AgentProcess] = {}
-        self.log_directory = Path(self.config.get("logging", {}).get("log_directory", "./logs"))
-        
+        self.log_directory = Path(self.config.logging.get("log_directory", "./logs"))
+
         # Set up state directory and file for persistent PID tracking
         self.state_directory = Path("./state")
         self.state_file = self.state_directory / "agents.json"

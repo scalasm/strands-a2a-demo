@@ -19,7 +19,7 @@ from a2a.server.agent_execution.context import RequestContext
 from a2a.utils import new_agent_text_message
 from agent_client import AgentCommunicationClient
 
-from app_config import ModelConfig, get_or_create_ai_model, configure_logging
+from app_config import get_or_create_ai_model, configure_logging
 
 
 configure_logging()
@@ -33,7 +33,7 @@ class BaseAgent:
     
     def __init__(self, system_prompt: str, tools: list, agent_name: str = "Unknown Agent"):
         """Initialize the base agent."""
-        model = get_or_create_ai_model(ModelConfig.from_config())
+        model = get_or_create_ai_model()
         logger.info(f"Using AI model: {model.model_id} with type {model.model_type}")
         
         self.strands_agent = Agent(system_prompt=system_prompt, tools=tools, model=model)

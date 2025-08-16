@@ -138,7 +138,7 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
 
 from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
-from app_config import load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model, ModelConfig
+from app_config import parse_agent_key, configure_logging, get_or_create_ai_model, ModelConfig, get_application_config
 
 
 # Use centralized logging configuration
@@ -154,8 +154,8 @@ class ConfigurableAgent:
         self.agent_key = agent_key
         
         # Load the specific agent configuration using the helper function
-        self.agent_config = load_agent_config(agent_key, "configurable_agent")
-        
+        self.agent_config = get_application_config().load_agent_config(agent_key, "configurable_agent")
+
         # Initialize storage for tools
         self.loaded_tools = []
         self.mcp_clients = []
@@ -392,7 +392,7 @@ class ConfigurableAgentExecutor(BaseAgentExecutor):
 
 def create_agent_card(agent_key: str):
     """Create agent card dynamically based on configuration for a specific agent."""
-    agent_config = load_agent_config(agent_key, "configurable_agent", fallback_port=8888)
+    agent_config = get_application_config().load_agent_config(agent_key, "configurable_agent", fallback_port=8888)
     
     skills = []
     
@@ -459,7 +459,7 @@ def main():
         )
         
         # Load the specific agent configuration with 8888 as fallback port
-        agent_config = load_agent_config(agent_key, "configurable_agent", fallback_port=8888)
+        agent_config = get_application_config().load_agent_config(agent_key, "configurable_agent", fallback_port=8888)
         
         # Extract port from the specific agent configuration (now guaranteed to have a port)
         port = agent_config.get("port", 8888)  # Double fallback just in case

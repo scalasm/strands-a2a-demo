@@ -15,11 +15,120 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def load_config():
-    """Load configuration from config/config.toml."""
-    config_path = Path(__file__).parent / "config" / "config.toml"
-    with open(config_path, "rb") as f:
-        return tomllib.load(f)
+# Environment variable for application config directory
+ENV_CONFIG_DIR="APP_CONFIG_DIR"
+
+class ApplicationConfig:
+    """Centralized configuration for the application.
+
+    It essentially is a wrapper around the config.toml file and environment variables.
+    """
+    def __init__(self, config_dir: str):
+        self.config_dir = config_dir
+        self.config_path = get_env(
+            "APP_CONFIG_DIR",
+            Path(__file__).parent / "config",
+            cast=Path
+        ) / "config.toml"
+        self._config = None
+
+    @property
+    def config(self) -> Dict[str, Any]:
+        if not self._config:
+            self._config = self._load_config(self.config_path)
+        return self._config
+
+    @property
+    def logging(self) -> Dict[str, Any]:
+        """Get logging configuration."""
+        return self.config.get("logging", {})
+
+    @property
+    def agents(self) -> Dict[str, Any]:
+        """Get model configuration."""
+        return self.config["agents"]
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """Get a configuration value by key."""
+        return self.config.get(key, default)
+
+    def _load_config(self, config_path: str) -> Dict[str, Any]:
+        """Load configuration from config/config.toml."""
+        with open(config_path, "rb") as f:
+            return tomllib.load(f)
+
+    def load_agent_config(self, agent_key: str, agent_type: str, fallback_port: int = 8888) -> Dict[str, Any]:
+        """
+        Load and validate configuration for a specific agent.
+
+        Args:
+        agent_key: The agent key (e.g., "calculator", "time", "time-and-calculator")
+        agent_type: The agent type ("configurable_agent" or "coordinator_agent")
+        fallback_port: The default port to use if not specified in config (default: 8888)
+    
+        Returns:
+            The agent configuration dictionary with port fallback applied
+            
+        Raises:
+            ValueError: If the agent key is not found in configuration
+            SystemExit: If configuration validation fails
+        """
+        agents_config = self.config.get(agent_type, {})
+
+        if agent_key not in agents_config:
+            available_keys = list(agents_config.keys())
+            logger = logging.getLogger(__name__)
+            logger.error(f"Agent '{agent_key}' not found in {agent_type} configuration.")
+            logger.error(f"Available {agent_type} agents: {available_keys}")
+            sys.exit(1)
+        
+        agent_config = agents_config[agent_key].copy()  # Copy to avoid modifying original config
+        
+        # Apply fallback port if not specified
+        if "port" not in agent_config:
+            agent_config["port"] = fallback_port
+            logger = logging.getLogger(__name__)
+            logger.warning(f"No port specified for {agent_type}.{agent_key}, using fallback port {fallback_port}")
+        
+        return agent_config
+
+def get_env(key: str, default: Optional[Any] = None, required: bool = False, cast: Any = str) -> Any:
+    """Get an environment variable with optional casting and default value.
+    Args:
+        key: The environment variable key.
+        default: The default value if the environment variable is not set.
+        required: Whether the environment variable is required.
+        cast: The type to cast the environment variable value to.
+
+    Returns:
+        The value of the environment variable, cast to the specified type.
+
+    Raises:
+        ValueError: If the environment variable is required but not set, or if the value cannot be cast to the specified type.
+    """
+    val = environ.get(key, default)
+    if required and val is None:
+        raise ValueError(f"Missing required environment variable: {key}")
+    if val is not None and cast is not None:
+        try:
+            return cast(val)
+        except Exception as ex:
+            raise ValueError(f"Invalid value for {key}: {val}") from ex
+    return val
+
+
+_application_config: ApplicationConfig = None
+
+def get_application_config() -> ApplicationConfig:
+    """Lazy get or create the application configuration.
+    
+    Returns:
+        The application configuration
+    """
+    global _application_config
+    if _application_config is None:
+        _application_config = ApplicationConfig(environ.get(ENV_CONFIG_DIR))
+    return _application_config
 
 
 def parse_agent_key(agent_type: str, description: str = None) -> str:
@@ -41,8 +150,8 @@ def parse_agent_key(agent_type: str, description: str = None) -> str:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Examples:
-  python {agent_type}_agent.py calculator         # Start the calculator agent
-  python {agent_type}_agent.py time              # Start the time agent
+python {agent_type}_agent.py calculator         # Start the calculator agent
+python {agent_type}_agent.py time              # Start the time agent
         """
     )
     
@@ -55,48 +164,10 @@ Examples:
     return args.agent_key
 
 
-def load_agent_config(agent_key: str, agent_type: str, fallback_port: int = 8888) -> Dict[str, Any]:
-    """
-    Load and validate configuration for a specific agent.
-    
-    Args:
-        agent_key: The agent key (e.g., "calculator", "time", "time-and-calculator")
-        agent_type: The agent type ("configurable_agent" or "coordinator_agent")
-        fallback_port: The default port to use if not specified in config (default: 8888)
-    
-    Returns:
-        The agent configuration dictionary with port fallback applied
-        
-    Raises:
-        ValueError: If the agent key is not found in configuration
-        SystemExit: If configuration validation fails
-    """
-    config = load_config()
-    agents_config = config.get(agent_type, {})
-    
-    if agent_key not in agents_config:
-        available_keys = list(agents_config.keys())
-        logger = logging.getLogger(__name__)
-        logger.error(f"Agent '{agent_key}' not found in {agent_type} configuration.")
-        logger.error(f"Available {agent_type} agents: {available_keys}")
-        sys.exit(1)
-    
-    agent_config = agents_config[agent_key].copy()  # Copy to avoid modifying original config
-    
-    # Apply fallback port if not specified
-    if "port" not in agent_config:
-        agent_config["port"] = fallback_port
-        logger = logging.getLogger(__name__)
-        logger.warning(f"No port specified for {agent_type}.{agent_key}, using fallback port {fallback_port}")
-    
-    return agent_config
-
-
 def configure_logging():
     """Configure logging from config/config.toml."""
     try:
-        config = load_config()
-        log_level = config.get("logging", {}).get("level", "INFO").upper()
+        log_level = get_application_config().logging.get("level", "INFO").upper()
         logging.basicConfig(level=getattr(logging, log_level), format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', force=True)
         logging.getLogger().setLevel(getattr(logging, log_level))
     except Exception:
@@ -144,20 +215,17 @@ class ModelConfig:
 
     @classmethod
     def from_config(cls, model_config: str | None) -> "ModelConfig":
-        """Create ModelConfig from environment variables."""
-        def get_env(key: str, default: Optional[Any] = None, required: bool = False, cast: Any = str) -> Any:
-            val = environ.get(key, default)
-            if required and val is None:
-                raise ValueError(f"Missing required environment variable: {key}")
-            if val is not None and cast is not None:
-                try:
-                    return cast(val)
-                except Exception as ex:
-                    raise ValueError(f"Invalid value for {key}: {val}") from ex
-            return val
-        
+        """Create ModelConfig from environment variables.
+        If not model_config is provided, the default one configured in the application config
+        will be loaded.
+
+        Args:
+            model_config: The model configuration string from the environment.
+
+        Returns: The created ModelConfig instance.
+        """
         if not model_config:
-            model_config = load_config()["agents"]["model"]
+            model_config = get_application_config().agents["model"]
 
         model_type_str, model_id = model_config.split("|", 1)
         try:
