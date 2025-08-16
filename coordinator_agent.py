@@ -27,7 +27,7 @@ from a2a.client import A2AClient
 from uuid import uuid4
 
 from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
-from model_config import ModelConfig, load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model
+from app_config import ModelConfig, load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model
 
 # Use centralized logging configuration
 configure_logging()

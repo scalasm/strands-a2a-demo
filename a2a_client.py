@@ -49,7 +49,7 @@ from a2a.types import (
 )
 
 from a2a_push_notification_manager import get_client_webhook_manager, managed_webhook_server
-from model_config import configure_logging
+from app_config import configure_logging
 
 # Configure logging
 configure_logging()

@@ -19,7 +19,7 @@ from a2a.server.agent_execution.context import RequestContext
 from a2a.utils import new_agent_text_message
 from agent_client import AgentCommunicationClient
 
-from model_config import ModelConfig, get_or_create_ai_model, configure_logging
+from app_config import ModelConfig, get_or_create_ai_model, configure_logging
 
 
 configure_logging()

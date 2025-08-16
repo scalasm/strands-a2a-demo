@@ -22,7 +22,7 @@ from dataclasses import dataclass
 import psutil
 import argparse
 
-from model_config import load_config
+from app_config import load_config
 
 logger = logging.getLogger(__name__)
 

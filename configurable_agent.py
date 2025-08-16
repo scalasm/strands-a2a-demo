@@ -138,7 +138,7 @@ from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
 
 from base_agent import BaseAgent, BaseAgentExecutor, create_base_agent_card
-from model_config import load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model, ModelConfig
+from app_config import load_config, parse_agent_key, load_agent_config, configure_logging, get_or_create_ai_model, ModelConfig
 
 
 # Use centralized logging configuration
